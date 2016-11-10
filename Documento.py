@@ -1,5 +1,5 @@
 import os
-import shutil
+import shutil as sh
 
 class Document:
 
@@ -29,45 +29,45 @@ class Document:
             srcname = os.path.join(src , name )
             dstname = os.path.join(self.ruta_salida, name)
             try:
-                copy(srcname, dstname)
+                sh.copy(srcname, dstname)
             except (IOError, os.error) as why:
                 errors.append((srcname, dstname, str(why)))
-
             except Error as err:
                 errors.extend(err.args[0])
 
     def crear_documento(self):
         self.documento = open( os.path.join( self.ruta_salida,
-        self.titulo_documento ), 'a+' )
-        self.documento.write('\\input{Carta3.tex}')
-        self.documento.write('\renewcommand{\partes}{}')
-        self.documento.write('\\renewcommand{\titulodoc}{' +
-        self.titulo_documento + '}')
-        self.documento.write( '\\newcommand{\\ra}[1]{\\renewcommand{\\arraystretch}{#1}}' )
-        self.documento.write( '\\definecolor{color1}{rgb}{0,0,0.8} ' +
-        '\n \\definecolor{color2}{rgb}{0.3,0.5,1}' )
+        self.titulo_documento ), 'w+' )
+        self.documento.write('\\input{Carta3.tex} \n')
+        self.documento.write('\\renewcommand{\partes}{} \n')
+        self.documento.write('\\renewcommand{\\titulodoc}{ ' +
+        self.titulo_documento + '}\n')
+        self.documento.write( '\\newcommand{\\ra}[1]{\\renewcommand{\\arraystretch}{#1}} \n' )
+        self.documento.write( '\\definecolor{color1}{rgb}{0,0,0.8} \n' +
+        '\\definecolor{color2}{rgb}{0.3,0.5,1} \n' )
+        self.documento.write('\\begin{document} \n' )
 
 
     def crear_cajita(self, titulo,descripcion, titulo_grafica,
-        des_grafica, grafica, fuente ):
-        cajita = '\\cajita{% \n' +
-        titulo + ' % \n' +
-        '}% \n'+
-        '{%'+
-        descripcion +  ' % \n' +
-        '}% \n'+
-        '{%'+
-        titulo_grafica + ' % \n' +
-        '}%'+
-        '{% \n '+
-        des_grafica + ' % \n' +
-        '}%'+
-        '{% \n ' +
-        grafica +' % \n' +
-        '}%'+
-        '{% \n'+
-        fuente + ' % \n' +
-        '} \n'
+        des_grafica, grafica, fuente):
+        cajita = '\\cajita{% \n'
+        + titulo + ' % \n'
+        + '}% \n'
+        + '{%'
+        descripcion +  ' % \n'
+        + '}% \n'
+        + '{%'
+        + titulo_grafica + ' % \n'
+        + '}%'
+        + '{% \n '
+        + des_grafica + ' % \n'
+        + '}%'
+        + '{% \n '
+        + grafica +' % \n'
+        + '}%'
+        + '{% \n'
+        + fuente + ' % \n'
+        + '} \n'
         return cajita
 
     def escribir_en_doc(self, texto):

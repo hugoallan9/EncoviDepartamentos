@@ -1,6 +1,29 @@
 {
-  "venv": "", 
+  "mainFile": "Main.py", 
+  "use-tabs": false, 
+  "venv": "/mnt/datos/Git/EncoviDepartamentos/proyecto/bin/python", 
+  "relatedProjects": [], 
   "name": "Encovi", 
   "license": "GNU General Public License v3", 
+  "url": "", 
+  "pythonPath": "python", 
+  "preExecScript": "", 
+  "additional_builtins": [], 
+  "programParams": "", 
+  "indentation": 4, 
+  "PYTHONPATH": "", 
+  "supported-extensions": [
+    ".py", 
+    ".html", 
+    ".jpg", 
+    ".png", 
+    ".ui", 
+    ".css", 
+    ".json", 
+    ".js", 
+    ".ini"
+  ], 
+  "project-type": "Documentos del INE", 
+  "postExecScript": "", 
   "description": ""
 }
