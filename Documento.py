@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import shutil as sh
 
@@ -8,12 +9,14 @@ class Document:
         self.lugar_geografico = lugar_geografico
         self.ruta_salida = ruta_salida
         self.anio_evento = anio
-        self.titulo_seccion = {}
-        self.descripcion = {}
-        self.titulo_grafica = {}
-        self.desagregacion_grafica = {}
-        self.grafica = {}
-        self.fuente = {}
+        self.no_capitulos = []
+        self.capitulos = []
+        self.titulo_seccion = []
+        self.descripcion = []
+        self.titulo_grafica = []
+        self.desagregacion_grafica = []
+        self.grafica = []
+        self.fuente = []
 
     def crear_directorio(self):
         try:
@@ -37,7 +40,7 @@ class Document:
 
     def crear_documento(self):
         self.documento = open( os.path.join( self.ruta_salida,
-        self.titulo_documento ), 'w+' )
+        self.titulo_documento + '.tex' ), 'w+' )
         self.documento.write('\\input{Carta3.tex} \n')
         self.documento.write('\\renewcommand{\partes}{} \n')
         self.documento.write('\\renewcommand{\\titulodoc}{ ' +
@@ -50,23 +53,23 @@ class Document:
 
     def crear_cajita(self, titulo,descripcion, titulo_grafica,
         des_grafica, grafica, fuente):
-        cajita = '\\cajita{% \n'
-        + titulo + ' % \n'
-        + '}% \n'
-        + '{%'
-        descripcion +  ' % \n'
-        + '}% \n'
-        + '{%'
-        + titulo_grafica + ' % \n'
-        + '}%'
-        + '{% \n '
-        + des_grafica + ' % \n'
-        + '}%'
-        + '{% \n '
-        + grafica +' % \n'
-        + '}%'
-        + '{% \n'
-        + fuente + ' % \n'
+        cajita = '\\cajita{% \n' \
+        + titulo + ' % \n' \
+        + '}% \n' \
+        + '{%' \
+        + descripcion +  ' % \n' \
+        + '}% \n' \
+        + '{%'\
+        + titulo_grafica + ' % \n' \
+        + '}%' \
+        + '{% \n ' \
+        + des_grafica + ' % \n' \
+        + '}%' \
+        + '{% \n ' \
+        + grafica +' % \n' \
+        + '}%' \
+        + '{% \n' \
+        + fuente + ' % \n' \
         + '} \n'
         return cajita
 
