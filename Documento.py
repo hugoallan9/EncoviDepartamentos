@@ -40,7 +40,7 @@ class Document:
                 errors.extend(err.args[0])
 
     def crear_documento(self):
-        self.ruta_compilacion = self.titulo_documento + '.tex'
+        self.ruta_compilacion = self.ruta_salida.strip().replace(" ", "\\ ")
         self.documento = open( os.path.join( self.ruta_salida,
         self.titulo_documento + '.tex' ), 'w+' )
         self.documento.write('\\input{Carta3.tex} \n')
@@ -75,15 +75,16 @@ class Document:
         return cajita
 
     def escribir_en_doc(self, texto):
-        self.documento.write(('\n \n ' + texto + '\n \n').encode('utf-8') )
+        self.documento.write( '\n \n ' + texto + '\n \n' )
 
     def terminar_documento(self):
         self.escribir_en_doc('\\end{document}'.encode('utf-8'))
         self.documento.close()
 
     def compilar_documento(self):
-        print "cd "+ self.ruta_salida + " && xelatex " + self.ruta_compilacion
-        subprocess.Popen("cd "+ self.ruta_salida + " && xelatex " + self.ruta_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
+        cadena_compilacion = "cd "+ self.ruta_compilacion + " && xelatex " + self.titulo_documento.strip().replace(" ", "\\ ") + ".tex"
+        print cadena_compilacion
+        print subprocess.Popen(cadena_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 

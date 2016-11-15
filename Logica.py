@@ -64,7 +64,10 @@ class Manejador:
             for row in sheet_ranges:
                 for cell in row:
                     col = cell.col_idx
-                    valor = cell.value
+                    try:
+                        valor = cell.value.encode('utf-8')
+                    except Exception:
+                        valor = cell.value
                     if col ==  1:
                         self.documentos[x].no_capitulos.append(valor)
                     if col == 2:
@@ -76,6 +79,8 @@ class Manejador:
                         self.documentos[x].titulo_grafica.append(valor)
                     if col == 6:
                         temp = valor
+                        if temp.upper().find("DEPARTAMENTO DE") != -1:
+                            temp = temp + " " + self.departamentos[x]
                     if col == 7:
                         temp = temp + ', ' + valor
                     if col == 8:
