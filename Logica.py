@@ -60,9 +60,9 @@ class Manejador:
         col = 0
         valor = ''
         temp = ''
-        for row in sheet_ranges:
-            for cell in row:
-                for x in range(0,22):
+        for x in range(0,22):
+            for row in sheet_ranges:
+                for cell in row:
                     col = cell.col_idx
                     valor = cell.value
                     if col ==  1:
@@ -82,7 +82,6 @@ class Manejador:
                         if valor != None:
                             temp =  temp + ', ' + valor
                         self.documentos[x].desagregacion_grafica.append(temp)
-                        print temp
 
     def rellenar_documentos(self):
         for x in range(0,22):
@@ -95,5 +94,6 @@ class Manejador:
                 '',
                 'Fuente: INE'
                     )
-                #print caja
-                #self.documentos[x].escribir_en_doc(caja)
+                self.documentos[x].escribir_en_doc(caja)
+            self.documentos[x].terminar_documento()
+            self.documentos[x].compilar_documento()

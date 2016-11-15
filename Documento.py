@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import shutil as sh
+import subprocess
 
 class Document:
 
@@ -39,6 +40,7 @@ class Document:
                 errors.extend(err.args[0])
 
     def crear_documento(self):
+        self.ruta_compilacion = self.titulo_documento + '.tex'
         self.documento = open( os.path.join( self.ruta_salida,
         self.titulo_documento + '.tex' ), 'w+' )
         self.documento.write('\\input{Carta3.tex} \n')
@@ -50,36 +52,38 @@ class Document:
         '\\definecolor{color2}{rgb}{0.3,0.5,1} \n' )
         self.documento.write('\\begin{document} \n' )
 
-
     def crear_cajita(self, titulo,descripcion, titulo_grafica,
         des_grafica, grafica, fuente):
         cajita = '\\cajita{% \n' \
         + titulo + ' % \n' \
         + '}% \n' \
-        + '{%' \
+        + '{% \n' \
         + descripcion +  ' % \n' \
         + '}% \n' \
-        + '{%'\
+        + '{% \n'\
         + titulo_grafica + ' % \n' \
-        + '}%' \
+        + '}% \n' \
         + '{% \n ' \
         + des_grafica + ' % \n' \
-        + '}%' \
+        + '}% \n' \
         + '{% \n ' \
         + grafica +' % \n' \
-        + '}%' \
+        + '}% \n' \
         + '{% \n' \
         + fuente + ' % \n' \
         + '} \n'
         return cajita
 
     def escribir_en_doc(self, texto):
-        self.documento.write('\n \n ' + texto + '\n \n')
+        self.documento.write(('\n \n ' + texto + '\n \n').encode('utf-8') )
 
     def terminar_documento(self):
-        escribir_en_doc('\\end{document}')
+        self.escribir_en_doc('\\end{document}'.encode('utf-8'))
         self.documento.close()
 
+    def compilar_documento(self):
+        print "cd "+ self.ruta_salida + " && xelatex " + self.ruta_compilacion
+        subprocess.Popen("cd "+ self.ruta_salida + " && xelatex " + self.ruta_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 

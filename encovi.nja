@@ -1,7 +1,7 @@
 {
   "mainFile": "Main.py", 
   "use-tabs": false, 
-  "venv": "/mnt/datos/GitHub/Projectos_Python/Encovi/proyecto/bin/python2.7", 
+  "venv": "/mnt/datos/Git/EncoviDepartamentos/proyecto/bin/python", 
   "relatedProjects": [], 
   "name": "Encovi", 
   "license": "GNU General Public License v3", 
