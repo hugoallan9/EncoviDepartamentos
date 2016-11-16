@@ -2,6 +2,7 @@
 import os
 import shutil as sh
 import subprocess
+import time
 
 class Document:
 
@@ -18,6 +19,7 @@ class Document:
         self.desagregacion_grafica = []
         self.grafica = []
         self.fuente = []
+        self.tipo_descriptor = []
 
     def crear_directorio(self):
         try:
@@ -43,6 +45,8 @@ class Document:
         self.ruta_compilacion = self.ruta_salida.strip().replace(" ", "\\ ")
         self.documento = open( os.path.join( self.ruta_salida,
         self.titulo_documento + '.tex' ), 'w+' )
+        self.documento.write('%Creado de manera automática en ' + time.strftime("%x")
+        + " a las " + time.strftime("%X") + '\n')
         self.documento.write('\\input{Carta3.tex} \n')
         self.documento.write('\\renewcommand{\partes}{} \n')
         self.documento.write('\\renewcommand{\\titulodoc}{ ' +
@@ -51,6 +55,7 @@ class Document:
         self.documento.write( '\\definecolor{color1}{rgb}{0,0,0.8} \n' +
         '\\definecolor{color2}{rgb}{0.3,0.5,1} \n' )
         self.documento.write('\\begin{document} \n' )
+        self.documento.write('\\tableofcontents')
 
     def crear_cajita(self, titulo,descripcion, titulo_grafica,
         des_grafica, grafica, fuente):
@@ -74,6 +79,11 @@ class Document:
         + '} \n'
         return cajita
 
+    def crear_capitulo(self,nombre_cap, descripcion_cap):
+        capitulo = "\\INEchaptercarta{" + nombre_cap \
+        +"}{" + descripcion_cap + "} "
+        return capitulo
+
     def escribir_en_doc(self, texto):
         self.documento.write( '\n \n ' + texto + '\n \n' )
 
@@ -85,6 +95,26 @@ class Document:
         cadena_compilacion = "cd "+ self.ruta_compilacion + " && xelatex " + self.titulo_documento.strip().replace(" ", "\\ ") + ".tex"
         print cadena_compilacion
         print subprocess.Popen(cadena_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
+
+    def crear_cadena_descriptor(self,formato,tipo):
+        tex = os.path.isfile( os.path.joiin(self.rutaa_salida, formato + '.tex') )
+        pdf = os.path.isfile( os.path.joiin(self.rutaa_salida, formato + '.pdf') )
+        retorno = ''
+        if tex or pdf:
+            try:
+                archivo = open(os.path.join(self.rutaa_salida, ,formato + '.tex'), 'w')
+                archivo.write('%Dummy file')
+            except Exception:
+                print Exception
+                pass
+        if tipo.strip().upper() == "CUADRO":
+            retorno = '\\input(formato)'
+        elif tipo.strip().upper() == "GRÁFICA":
+            if tex:
+                retorno = '\\begin{tikzpicture}[x=1pt,y=1pt]\\input{' + formato + '.tex}' + '\\end{tikzpicture}'
+            else:
+                retorno = '\\includepdf{' + formato + '.pdf' + '}'
+        return retorno
 
 
 

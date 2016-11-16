@@ -77,6 +77,8 @@ class Manejador:
                         self.documentos[x].titulo_seccion.append(valor)
                     if col == 4:
                         self.documentos[x].titulo_grafica.append(valor)
+                    if col == 5:
+                        self.documentos[x].tipo_descriptor.append(valor)
                     if col == 6:
                         temp = valor
                         if temp.upper().find("DEPARTAMENTO DE") != -1:
@@ -88,9 +90,47 @@ class Manejador:
                             temp =  temp + ', ' + valor
                         self.documentos[x].desagregacion_grafica.append(temp)
 
+
+    def formatear_secciones(self,contador):
+        formato = ''
+        if contador < 10 :
+            try:
+                formato = '0' + str(contador)
+            except:
+                pass
+        else:
+            try:
+                formato = str(contador)
+            except:
+                pass
+        return formato
+
+
     def rellenar_documentos(self):
+        contador_capitulos = 0
+        contador_secciones = 1
         for x in range(0,22):
-            for y in range( len(self.documentos[x].no_capitulos) ):
+            self.documentos[x].capitulos.pop(0)
+            contador_capitulos = self.documentos[x].no_capitulos[1]
+            capitulo = self.documentos[x].crear_capitulo(
+                self.documentos[x].capitulos.pop(0),
+                "Descripcion"
+                )
+            self.documentos[x].escribir_en_doc(capitulo)
+            for y in range(1,len(self.documentos[x].no_capitulos) ):
+                try:
+                    print self.documentos[x].crear_cadena_descriptor(self.formatear_secciones(contador_secciones), self.documentos[x].tipo_descriptor[y])
+                except Exception:
+                    print Exception
+                    pass
+                if self.documentos[x].no_capitulos[y] != contador_capitulos:
+                    capitulo = self.documentos[x].crear_capitulo(
+                    self.documentos[x].capitulos.pop(0),
+                    "Descripcion"
+                    )
+                    self.documentos[x].escribir_en_doc(capitulo)
+                    contador_secciones = 1
+                contador_capitulos = self.documentos[x].no_capitulos[y]
                 caja = self.documentos[x].crear_cajita(
                 self.documentos[x].titulo_seccion[y],
                 'descripcion',
@@ -101,4 +141,5 @@ class Manejador:
                     )
                 self.documentos[x].escribir_en_doc(caja)
             self.documentos[x].terminar_documento()
+            self.documentos[x].compilar_documento()
             self.documentos[x].compilar_documento()
