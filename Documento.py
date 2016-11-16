@@ -94,26 +94,39 @@ class Document:
     def compilar_documento(self):
         cadena_compilacion = "cd "+ self.ruta_compilacion + " && xelatex " + self.titulo_documento.strip().replace(" ", "\\ ") + ".tex"
         print cadena_compilacion
-        print subprocess.Popen(cadena_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen(cadena_compilacion, shell=True, stdout=subprocess.PIPE).stdout.read()
 
     def crear_cadena_descriptor(self,formato,tipo):
-        tex = os.path.isfile( os.path.joiin(self.rutaa_salida, formato + '.tex') )
-        pdf = os.path.isfile( os.path.joiin(self.rutaa_salida, formato + '.pdf') )
+        print formato, tipo, os.path.join(self.ruta_salida, 'graficas',formato + '.tex')
+        tex = os.path.isfile( os.path.join(self.ruta_salida, 'graficas',formato + '.tex') )
+        pdf = os.path.isfile( os.path.join(self.ruta_salida,'graficas', formato + '.pdf') )
         retorno = ''
-        if tex or pdf:
+        if not tex or pdf:
             try:
-                archivo = open(os.path.join(self.rutaa_salida, ,formato + '.tex'), 'w')
-                archivo.write('%Dummy file')
-            except Exception:
-                print Exception
+                os.makedirs( os.path.join(self.ruta_salida,'graficas') )
+            except OSError:
+                print "El directorio de graficas ya existe"
+            try:
+                os.makedirs( os.path.join(self.ruta_salida,'cuadros') )
+            except OSError:
+                print "El directorio de cuadros ya existe"
+            try:
+                if tipo.strip().upper() == "CUADRO":
+                    archivo = open(os.path.join(self.ruta_salida, 'cuadros',formato + '.tex'), 'w')
+                    archivo.write('%Dummy file')
+                else:
+                    archivo = open(os.path.join(self.ruta_salida, 'graficas',formato + '.tex'), 'w')
+                    archivo.write('%Dummy file')
+            except ValueError:
+                print 'Una excepcion', ValueError
                 pass
         if tipo.strip().upper() == "CUADRO":
-            retorno = '\\input(formato)'
-        elif tipo.strip().upper() == "GRÁFICA":
-            if tex:
-                retorno = '\\begin{tikzpicture}[x=1pt,y=1pt]\\input{' + formato + '.tex}' + '\\end{tikzpicture}'
-            else:
+            retorno = '\\input{cuadros/' + formato + '.tex}'
+        else:
+            if pdf:
                 retorno = '\\includepdf{' + formato + '.pdf' + '}'
+            else:
+                retorno = '\\begin{tikzpicture}[x=1pt,y=1pt]\\input{graficas/' + formato + '.tex}' + '\\end{tikzpicture}'
         return retorno
 
 

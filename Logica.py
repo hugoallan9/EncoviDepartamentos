@@ -117,12 +117,8 @@ class Manejador:
                 "Descripcion"
                 )
             self.documentos[x].escribir_en_doc(capitulo)
+            contador_secciones = 1
             for y in range(1,len(self.documentos[x].no_capitulos) ):
-                try:
-                    print self.documentos[x].crear_cadena_descriptor(self.formatear_secciones(contador_secciones), self.documentos[x].tipo_descriptor[y])
-                except Exception:
-                    print Exception
-                    pass
                 if self.documentos[x].no_capitulos[y] != contador_capitulos:
                     capitulo = self.documentos[x].crear_capitulo(
                     self.documentos[x].capitulos.pop(0),
@@ -136,9 +132,10 @@ class Manejador:
                 'descripcion',
                 self.documentos[x].titulo_grafica[y],
                 self.documentos[x].desagregacion_grafica[y],
-                '',
+                self.documentos[x].crear_cadena_descriptor(str(contador_capitulos) + '_' + self.formatear_secciones(contador_secciones), self.documentos[x].tipo_descriptor[y]),
                 'Fuente: INE'
                     )
+                contador_secciones = contador_secciones + 1
                 self.documentos[x].escribir_en_doc(caja)
             self.documentos[x].terminar_documento()
             self.documentos[x].compilar_documento()
