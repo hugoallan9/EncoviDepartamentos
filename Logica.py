@@ -47,12 +47,14 @@ class Manejador:
     def crear_carpetas(self):
         for x in range(0,22):
             self.documentos[x].crear_directorio()
+            self.documentos[x].crear_carpeta_descripciones()
             self.documentos[x].copiar_utilidades()
 
 
     def empezar_documentos(self):
         for x in range(0,22):
             self.documentos[x].crear_documento()
+            self.documentos[x].crear_presentacion()
 
     def leer_libro(self):
         wb = load_workbook(filename = 'Contenido_Encovi_Departamentales.xlsx')
@@ -89,6 +91,9 @@ class Manejador:
                         if valor != None:
                             temp =  temp + ', ' + valor
                         self.documentos[x].desagregacion_grafica.append(temp)
+                    if col == 10:
+                        self.documentos[x].incluir_presentacion.append(valor)
+
 
 
     def formatear_secciones(self,contador):
@@ -129,14 +134,19 @@ class Manejador:
                 contador_capitulos = self.documentos[x].no_capitulos[y]
                 caja = self.documentos[x].crear_cajita(
                 self.documentos[x].titulo_seccion[y],
-                'descripcion',
+                '\\input{descripciones/'+ str(contador_capitulos) + '_' + self.formatear_secciones(contador_secciones) + '.tex}' ,
                 self.documentos[x].titulo_grafica[y],
                 self.documentos[x].desagregacion_grafica[y],
                 self.documentos[x].crear_cadena_descriptor(str(contador_capitulos) + '_' + self.formatear_secciones(contador_secciones), self.documentos[x].tipo_descriptor[y]),
-                'Fuente: INE'
+                'INE'
                     )
                 contador_secciones = contador_secciones + 1
                 self.documentos[x].escribir_en_doc(caja)
+                if self.documentos[x].incluir_presentacion[y] == '*':
+                    self.documentos[x].escribir_en_presentacion(caja)
+            self.documentos[x].escribir_descripciones()
             self.documentos[x].terminar_documento()
+            self.documentos[x].terminar_presentacion()
             self.documentos[x].compilar_documento()
             self.documentos[x].compilar_documento()
+            self.documentos[x].compilar_presentacion()
