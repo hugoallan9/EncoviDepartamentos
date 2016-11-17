@@ -192,3 +192,4 @@ class Manejador:
             self.documentos[x].compilar_documento()
             self.documentos[x].compilar_documento()
             self.documentos[x].compilar_presentacion()
+            self.documentos[x].limpiar_directorio()

@@ -45,6 +45,7 @@ class Document:
                 errors.extend(err.args[0])
 
 
+
     def crear_documento(self):
         self.ruta_compilacion = self.ruta_salida.strip().replace(" ", "\\ ")
         self.documento = open( os.path.join( self.ruta_salida,
@@ -60,6 +61,19 @@ class Document:
         '\\definecolor{color2}{rgb}{0.3,0.5,1} \n' )
         self.documento.write('\\begin{document} \n' )
         self.documento.write('\\tableofcontents')
+
+
+    def limpiar_directorio(self):
+        for f in os.listdir(self.ruta_salida):
+            if f == self.titulo_documento + '.pdf' or f == self.titulo_documento + '-Presentacion.tex':
+                pass
+            else:
+                print f
+                if os.path.isfile( os.path.join(self.ruta_salida,f)):
+                    os.remove(os.path.join(self.ruta_salida,f) )
+                else:
+                    sh.rmtree(os.path.join(self.ruta_salida,f))
+
 
     def crear_presentacion(self):
         self.presentacion = open( os.path.join( self.ruta_salida,
@@ -201,6 +215,7 @@ class Document:
             os.makedirs( os.path.join(self.ruta_salida, 'descripciones') )
         except OSError:
             print "El directorio ya existe"
+
 
     def des_102(self):
         datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','1_02.csv'))
