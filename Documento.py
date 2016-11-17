@@ -22,6 +22,7 @@ class Document:
         self.fuente = []
         self.tipo_descriptor = []
         self.incluir_presentacion = []
+        self.tabla = ''
 
     def crear_directorio(self):
         try:
@@ -42,6 +43,7 @@ class Document:
                 errors.append((srcname, dstname, str(why)))
             except Error as err:
                 errors.extend(err.args[0])
+
 
     def crear_documento(self):
         self.ruta_compilacion = self.ruta_salida.strip().replace(" ", "\\ ")
@@ -65,7 +67,27 @@ class Document:
         self.presentacion.write('%Creado de manera automática en ' + time.strftime("%x")
         + " a las " + time.strftime("%X") + '\n')
         self.presentacion.write('\\input{Presentacion.tex} \n')
+        self.presentacion.write('\\newcommand{\\ra}[1]{\\renewcommand{\\arraystretch}{#1}}')
         self.presentacion.write('\\begin{document} \n' )
+        self.presentacion.write('\\primeradiapositiva{ Resultados ENCOVI 2014}{'\
+        +'Participación ciudadana y medios de comunicación}{}{' + self.lugar_geografico+', noviembre 2016}')
+        self.presentacion.write('\\diaposimple{Objetivo General de ENCOVI}{ Conocer y evaluar las condiciones de vida de la población y determinar los niveles de pobreza existentes en Guatemala. }\n\n')
+        self.presentacion.write('\\diapolist{Objetivos Específicos de ENCOVI}{%\ \n \\item Contar con información confiable y oportuna que permita identificar las condiciones de vida de los distintos grupos sociales del país, especialmente en la estructura de los ingresos y gastos del hogar, que faciliten la elaboración y evaluación de planes, políticas y estrategias de desarrollo. \n'\
+        +  '\\item Obtener estimaciones de la tasa de pobreza y pobreza extrema para cada uno de los dominios de estudio de esta encuesta. \n'\
+        +'\\item Generar información socio-demográfica y económica que permita aproximarse a los niveles de bienestar de las familias y explicar sus hábitos de consumo y la manera en la que se forma su ingreso. \n'\
+        + '\\item Monitorear los avances e impactos de los programas y acciones sociales. }\n\n')
+        self.presentacion.write('\\diaposimple{Muestra Encovi por Departamentos}{\\normalsize\n'\
+        +'\\begin{center}\\fontsize{2.8mm}{0.8em}\\selectfont \\setlength{\\arrayrulewidth}{0.7pt}\n'\
+        +'\\begin{tabular}{cccc}\n'\
+        +'&&&\\\\[-1.3cm]\n'\
+        +'\\multicolumn{1}{c}{\\textbf{Dominio}} & \\multicolumn{1}{c}{\\Bold{Departamento}}&\\multicolumn{1}{c}{\\Bold{UPMS}}&\\multicolumn{1}{c}{\\Bold{Hogares}}\\\\[0.05cm]\\hline \n'\
+        +self.tabla\
+        +'&\\textbf{Total}	&\\textbf{1,037}&	\\textbf{11,540}\\\\[0.05cm]  \n'\
+        +'\\hline \n'\
+        +'&&&\\\\[-0.36cm]\n'\
+        +'\\end{tabular}\n'\
+        +'\\end{center}\n'\
+        +'{\\footnotesize Fuente:  Encuesta Nacional de Condiciones de Vida (Encovi) 2014.} }' )
 
 
     def crear_cajita(self, titulo,descripcion, titulo_grafica,
@@ -95,6 +117,11 @@ class Document:
         +"}{" + descripcion_cap + "} "
         return capitulo
 
+    def crear_capitulo_presentacion(self,nombre_cap, descripcion_cap):
+        capitulo = "\\INEpartecarta{" + nombre_cap \
+        +"}{" + descripcion_cap + "} "
+        return capitulo
+
     def escribir_en_doc(self, texto):
         self.documento.write( '\n \n ' + texto + '\n \n' )
 
@@ -107,6 +134,7 @@ class Document:
 
 
     def terminar_presentacion(self):
+        self.escribir_en_presentacion('\\muchasgracias'.encode('utf-8'))
         self.escribir_en_presentacion('\\end{document}'.encode('utf-8'))
         self.presentacion.close()
 
@@ -309,6 +337,137 @@ class Document:
         archivo.write(des)
 
 
+    def des_608(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','6_08.csv'))
+        des = 'Al comparar el consumo de las familias con la línea de pobreza extrema, resulta que en 2014 el '\
+        +self.formato_bonito(datos[2][1]) + '\\% de personas en el departamento de '\
+        +self.lugar_geografico + ' se encontraba en condición de pobreza extrema.\n\n'\
+        +'Este porcentaje es más ' + self.alto_bajo(datos[2][1],datos[1][1]) + ' que el observado en 2006, el cual ascendía a '\
+        +self.formato_bonito(datos[1][1]) +'\\%'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','6_08.tex'), 'w')
+        archivo.write(des)
+
+    def des_609(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','6_09.csv'))
+        des = 'En 2014, el 23.4\\% de la población guatemalteca se encontraba en condición de pobreza extrema. Gracias al diseño muestral de la Encovi, es posible desagregar este dato por departamento. \n \n'\
+        +'La incidencia de pobreza extrema en el departamento de ' + self.lugar_geografico \
+        +' en el 2014 fue de ' + self.formato_bonito(datos[2][1]) + ', dato '\
+        +self.mayor_menor(datos[2][1],datos[1][1]) + ' que el porcentaje nacional.'
+
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','6_09.tex'), 'w')
+        archivo.write(des)
+
+    def des_610(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','6_10.csv'))
+        des = 'En 2014, el 11.2\\% de la población urbana estaba en pobreza extrema; para el caso de la población rural, este indicador se ubicó en 35.3\\%.\n\n'\
+        +'Para el departamento de ' + self.lugar_geografico \
+        +', la pobreza extrema en el área rural se ubicó en ' + self.formato_bonito(datos[2][1]) \
+        +'\\% y en el área urbana en' + self.formato_bonito(datos[1][1]) + '\\%, según la información de la Encovi 2014.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','6_10.tex'), 'w')
+        archivo.write(des)
+
+    def des_301(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','3_01.csv'))
+        des = 'Contar con un seguro de salud garantiza, en buena medida, el acceso a servicios médicos para el tratamiento de enfermedades y lesiones ocasionadas por accidentes.\n\n'\
+        +'Para el caso del departamento de ' + self.lugar_geografico \
+        +', la Encovi 2014 revela que el ' + self.formato_bonito(datos[3][1])\
+        +'\\% de la población no estaba cubierta por ningún tipo de seguro médico, ni privado ni público.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','3_01.tex'), 'w')
+        archivo.write(des)
+
+    def des_302(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','3_02.csv'))
+        des = 'El seguro social fue una de las principales conquistas de la Revolución de octubre de 1944, el cual fue creado con el objetivo de ser una garantía de salud para todos los guatemaltecos. \n\n'\
+        +'La Encovi 2014 muestra que el ' + self.formato_bonito(datos[3][1]) \
+        +'\\% de la población del departamento de ' + self.lugar_geografico\
+        +' tuvo acceso a esta protección social. '
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','3_02.tex'), 'w')
+        archivo.write(des)
+
+    def des_303(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','3_03.csv'))
+        des = 'El papanicolau es un examen médico que tiene como objetivo el diagnóstico preventivo del cáncer del cuello uterino. \n\n'\
+        +'Según la información de la Encovi, en 2014 el '+ self.formato_bonito(datos[3][1])\
+        +'\\% de las mujeres en edad fértil del departamento de ' + self.lugar_geografico\
+        +' se realizaron alguna vez el examen de papanicolau.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','3_03.tex'), 'w')
+        archivo.write(des)
+
+    def des_304(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','3_04.csv'))
+        des = 'Las mamografías son exámenes que buscan detectar en forma temprana el cáncer de seno. A nivel nacional, en 2014 el 4.2\\% de mujeres entre 15 a 49 años se habían realizado este tipo de examen en los doce meses anteriores a la encuesta.\n\n'\
+        +'Para las mujeres en edad fértil del departamento de ' + self.lugar_geografico \
+        +', este porcentaje se ubicó en ' + self.formato_bonito(datos[3][1])+ '\\%, según la Encovi 2014.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','3_04.tex'), 'w')
+        archivo.write(des)
+
+    def des_305(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','3_05.csv'))
+        des = 'El promedio de embarazos de las mujeres en edad fértil es una variable importante tanto para la salud materno infantil, como para el estudio de las tendencias demográficas de un país.\n\n'\
+        +'La Encovi 2014 muestra que el departamento de ' + self.lugar_geografico \
+        +' las mujeres en edad fértil han tenido, en promedio, ' + self.formato_bonito(datos[3][1]) + ' embarazos.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','3_05.tex'), 'w')
+        archivo.write(des)
+
+    def des_401(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_01.csv'))
+        des = 'La alfabetización universal es uno de los objetivos de desarrollo más importantes del país. A nivel nacional, el 79.1\\% de la población de 15 años o más sabía leer y escribir en el 2014, según los datos de la Encovi.\n\n'\
+        +'En el departamento de ' + self.lugar_geografico + ' , el '\
+        +self.formato_bonito(datos[3][1]) +  '\\% de los mayores de 14 años sabían leer y escribir en 2014 según revela la información de la Encovi de ese año. Se observa en la gráfica que este indicador ha tenido una tendencia creciente.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_01.tex'), 'w')
+        archivo.write(des)
+
+    def des_402(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_02.csv'))
+        des = 'Por pobreza, la Encovi 2014 muestra que la tasa de alfabetismo en el departamento de '\
+        +self.lugar_geografico + ' para los pobres extremos era de '\
+        +self.formato_bonito(datos[1][1]) + '\\%, para los pobres no extremos de ' + self.formato_bonito(datos[2][1])\
+        +'\\%. En general puede observarse que a mayor pobreza, menor es la tasa de alfabetismo.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_02.tex'), 'w')
+        archivo.write(des)
+
+    def des_403(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_03.csv'))
+        des = 'Los años de escolaridad promedio miden que tanto ha avanzado una población en los distintos niveles y grados educativos. \n\n'\
+        +'En el departamento de ' + self.lugar_geografico + ' , la Encovi de 2014 señala que, en promedio, la población alcanzó '\
+        +self.formato_bonito(datos[3][1]) +' años de escolaridad.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_03.tex'), 'w')
+        archivo.write(des)
+
+    def des_404(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_04.csv'))
+        des = 'Que los niños no asistan a la escuela es una condición no deseada, debido a la importancia que la educación tiene en los niños para su correcto desarrollo.\n\n'\
+        +'La Encovi 2014 muestra que en el departamento de ' + self.lugar_geografico \
+        +', el ' + self.formato_bonito(datos[3][1]) + '\\% de niños entre 7 y 12 años no estaban inscritos en un centro educativo del nivel primario.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_04.tex'), 'w')
+        archivo.write(des)
+
+    def des_405(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_05.csv'))
+        des = 'En general, los países que logran que buena parte de población joven ingrese a la educación media, tienen mejores niveles de desarrollo.\n\n'\
+        +'Para el caso del departamento de ' + self.lugar_geografico + ', el '\
+        +self.formato_bonito(datos[3][1])+ '\\% no logró asistir a un plantel educativo del ciclo básico en 2014, según la información de la Encovi.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_05.tex'), 'w')
+        archivo.write(des)
+
+    def des_405(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','4_05.csv'))
+        des = 'En general, los países que logran que buena parte de población joven ingrese a la educación media, tienen mejores niveles de desarrollo.\n\n'\
+        +'Para el caso del departamento de ' + self.lugar_geografico + ', el '\
+        +self.formato_bonito(datos[3][1])+ '\\% no logró asistir a un plantel educativo del ciclo básico en 2014, según la información de la Encovi.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','4_05.tex'), 'w')
+        archivo.write(des)
+
+    def des_505(self):
+        datos = self.leer_csv(os.path.join(self.ruta_salida, 'csv','5_05.csv'))
+        des = 'En el departamento de ' + self.lugar_geografico + '  el '\
+        +self.formato_bonito(datos[1][1]) + '\\% de los ocupados labora en el sector primario de la economía (agricultura, silvicultura, pesca, etc.), el '\
+        +self.formato_bonito(datos[2][1]) + '\\% en la industria y el '\
+        +self.formato_bonito(datos[3][1]) + '\\% en los servicios.'
+        archivo = open( os.path.join(self.ruta_salida, 'descripciones','5_05.tex'), 'w')
+        archivo.write(des)
+
+
     def alto_bajo(self,dato1, dato2):
         if float(dato1) > float(dato2):
             return 'alto'
@@ -335,7 +494,10 @@ class Document:
            return 'mientras que casi ningún hogar habitaba una  vivienda con  paredes de adobe.'
 
     def formato_bonito(self, numero):
-        return "{:,}".format(round(float(numero),2)).strip('0').strip('.')
+        if float(numero) < 1:
+            return "{:,}".format(round(float(numero),2))
+        else:
+            return "{:,}".format(round(float(numero),2)).strip('0').strip('.')
 
     def cambio(self, dato1, dato2):
         dato1 = float(dato1)
@@ -377,3 +539,16 @@ class Document:
         self.des_602()
         self.des_603()
         self.des_604()
+        self.des_608()
+        self.des_610()
+        self.des_301()
+        self.des_302()
+        self.des_303()
+        self.des_304()
+        self.des_305()
+        self.des_401()
+        self.des_402()
+        self.des_403()
+        self.des_404()
+        self.des_405()
+        self.des_505()

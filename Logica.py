@@ -33,9 +33,14 @@ class Manejador:
         self.documentos = []
         self.crear_documentos()
         self.crear_carpetas()
-        self.empezar_documentos()
         self.leer_libro()
+        self.leer_tabla()
+        self.empezar_documentos()
         self.rellenar_documentos()
+
+
+
+
 
     def crear_documentos(self):
         for depto in self.departamentos:
@@ -55,6 +60,35 @@ class Manejador:
         for x in range(0,22):
             self.documentos[x].crear_documento()
             self.documentos[x].crear_presentacion()
+
+    def leer_tabla(self):
+        wb = load_workbook(filename = 'tabla.xlsx')
+        sheet_ranges = wb['Hoja1']
+        fila = 0
+        valor = ''
+        for x in range(0,22):
+            for row in sheet_ranges:
+                fila = row[0].value
+                print x+1, fila
+                for cell in row:
+                    try:
+                        valor = cell.value.encode('utf-8')
+                    except:
+                        valor = self.documentos[x].formato_bonito(cell.value)
+                    if cell.col_idx == 8:
+                        valor = valor + '\n'
+                    if x +1 != fila:
+                        self.documentos[x].tabla = self.documentos[x].tabla + valor
+                    else:
+                        print 'Entre al caso'
+                        if valor == "&" or cell.col_idx == 8:
+                            print 'En el if'
+                            self.documentos[x].tabla = self.documentos[x].tabla + valor
+                        else:
+                            print 'Entré al else'
+                            self.documentos[x].tabla = self.documentos[x].tabla + '\\Bold{ '  + valor + '}'
+                print self.documentos[x].tabla
+
 
     def leer_libro(self):
         wb = load_workbook(filename = 'Contenido_Encovi_Departamentales.xlsx')
@@ -114,22 +148,30 @@ class Manejador:
     def rellenar_documentos(self):
         contador_capitulos = 0
         contador_secciones = 1
+        titulo = ''
         for x in range(0,22):
             self.documentos[x].capitulos.pop(0)
             contador_capitulos = self.documentos[x].no_capitulos[1]
             capitulo = self.documentos[x].crear_capitulo(
                 self.documentos[x].capitulos.pop(0),
-                "Descripcion"
+                ""
                 )
             self.documentos[x].escribir_en_doc(capitulo)
+            self.documentos[x].escribir_en_presentacion(capitulo)
             contador_secciones = 1
             for y in range(1,len(self.documentos[x].no_capitulos) ):
                 if self.documentos[x].no_capitulos[y] != contador_capitulos:
+                    titulo = self.documentos[x].capitulos.pop(0)
                     capitulo = self.documentos[x].crear_capitulo(
-                    self.documentos[x].capitulos.pop(0),
-                    "Descripcion"
+                    titulo,
+                    ""
                     )
                     self.documentos[x].escribir_en_doc(capitulo)
+                    capitulo = self.documentos[x].crear_capitulo(
+                    titulo,
+                    ""
+                    )
+                    self.documentos[x].escribir_en_presentacion(capitulo)
                     contador_secciones = 1
                 contador_capitulos = self.documentos[x].no_capitulos[y]
                 caja = self.documentos[x].crear_cajita(
