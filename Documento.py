@@ -65,7 +65,7 @@ class Document:
 
     def limpiar_directorio(self):
         for f in os.listdir(self.ruta_salida):
-            if f == self.titulo_documento + '.pdf' or f == self.titulo_documento + '-Presentacion.tex':
+            if f == self.titulo_documento + '.pdf' or f == self.titulo_documento + '-Presentacion.pdf':
                 pass
             else:
                 print f
